@@ -12,7 +12,7 @@ import json
 import os
 from datetime import datetime
 
-API_TOKEN = '8847770817:AAEvb1wu9D3eFESfNKNkZB-IKdvLC-edGZo'
+API_TOKEN = '8976295369:AAGsYrQ3xlM1shvOV8xnlanTvfp_deYkuhM'
 OPENAI_API_KEY = 'sk-0f1BAqfKVomDNTYyzVaoPVYcQ7ciRDSr'
 ADMIN_ID = 823834143
 
@@ -57,8 +57,6 @@ data = load_data()
 orders = load_orders()
 user_data = {}
 chat_history = {}
-
-# --- Клавиатуры ---
 
 def get_main_keyboard():
     keyboard = [
@@ -105,8 +103,6 @@ def get_menu_edit_keyboard():
     ]
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
 
-# --- Команды ---
-
 @dp.message(Command('start'))
 async def start(message: Message):
     chat_id = message.chat.id
@@ -135,8 +131,6 @@ async def admin_panel(message: Message):
         "🔐 Админ-панель\n\nВыберите действие:",
         reply_markup=get_admin_keyboard()
     )
-
-# --- Обработчик ---
 
 @dp.message()
 async def handle_buttons(message: Message):
@@ -583,10 +577,27 @@ async def chat_gpt(message: Message):
         print(e)
         await message.answer("Извините, произошла заминка. Напишите нашему менеджеру @psi_blade", reply_markup=get_main_keyboard())
 
-# --- ЗАПУСК ---
+# ===== ЗАПУСК ДЛЯ RENDER =====
+
+from aiohttp import web
+
+async def health_check(request):
+    return web.Response(text="I'm alive")
+
+async def start_web():
+    app = web.Application()
+    app.router.add_get('/', health_check)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, host='0.0.0.0', port=10000)
+    await site.start()
+    print("Web server started on port 10000")
 
 async def main():
-    await dp.start_polling(bot)
+    await asyncio.gather(
+        dp.start_polling(bot),
+        start_web()
+    )
 
 if __name__ == '__main__':
     asyncio.run(main())
