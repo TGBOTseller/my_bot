@@ -3,6 +3,7 @@ from aiogram.filters import Command
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 import asyncio
 import sys
+import traceback  # Добавил для детального лога ошибок
 
 if sys.platform == 'win32':
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -12,7 +13,7 @@ import json
 import os
 from datetime import datetime
 
-API_TOKEN = '8976295369:AAGsYrQ3xlM1shvOV8xnlanTvfp_deYkuhM'
+API_TOKEN = '8847770817:AAEvb1wu9D3eFESfNKNkZB-IKdvLC-edGZo'
 OPENAI_API_KEY = 'sk-0f1BAqfKVomDNTYyzVaoPVYcQ7ciRDSr'
 ADMIN_ID = 823834143
 
@@ -577,7 +578,7 @@ async def chat_gpt(message: Message):
         print(e)
         await message.answer("Извините, произошла заминка. Напишите нашему менеджеру @psi_blade", reply_markup=get_main_keyboard())
 
-# ===== ЗАПУСК ДЛЯ RENDER =====
+# ===== ЗАПУСК ДЛЯ RENDER С ДЕТАЛЬНЫМИ ЛОГАМИ =====
 
 from aiohttp import web
 
@@ -600,4 +601,8 @@ async def main():
     )
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except Exception as e:
+        print(f"CRITICAL ERROR: {e}")
+        traceback.print_exc()
